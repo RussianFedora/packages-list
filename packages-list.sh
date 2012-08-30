@@ -4,9 +4,10 @@ readme_file="README.RFRemix"
 temp="/tmp/github-repos"
 result_file="${temp}/result.txt"
 nolist_file="${temp}/nofile-list.txt"
+excludes_file="${temp}/excludes.txt"
 
-github_username="info@russianfedora.ru"
-github_password="ru.fedoracommunity.org"
+github_username=""
+github_password=""
 
 operation="read"
 if [ "1$1" == "1templates" ]; then
@@ -80,14 +81,16 @@ function create_template {
 }    
 
 if [ -d $temp ]; then
+    cp excludes.txt ${temp}/
     pushd $temp
 else
     mkdir -p $temp || exit 1
+    cp excludes.txt ${temp}/
     pushd $temp
 fi
 
 # Download all repository
-get_repos $github_username $github_password
+#get_repos $github_username $github_password
 
 # Remove result_file
 if [ -f $result_file ]; then
@@ -130,7 +133,17 @@ for dir in $dirs; do
         if [ "$operation" == "read" ]; then
             echo "${dir_name}" >> $nolist_file
         elif [ "$operation" == "write" ]; then
-            create_template $dir_name
+            do_create="NO"
+            while read line; do
+                if [ "$line" == "$dir_name" ]; then
+                    continue
+                fi
+                do_create="YES"
+
+            done < $excludes_file
+            if [ "$do_create" == "YES" ]; then
+                create_template $dir_name
+            fi
         fi
         
     fi
