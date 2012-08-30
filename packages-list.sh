@@ -3,6 +3,7 @@
 readme_file="README.RFRemix"
 temp="/tmp/github-repos"
 result_file="${temp}/result.txt"
+nolist_file="${temp}/nofile-list.txt"
 
 github_username=""
 github_password=""
@@ -68,7 +69,7 @@ for dir in $dirs; do
     fi
 
     if [ "$found" == "NO" ]; then
-        echo -e "${dir_name}: Файл описания не найден!" >> $result_file
+        echo "${dir_name}" >> $nolist_file
     fi
     popd
 done
