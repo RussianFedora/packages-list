@@ -90,7 +90,7 @@ else
 fi
 
 # Download all repository
-#get_repos $github_username $github_password
+get_repos $github_username $github_password
 
 # Remove result_file
 if [ -f $result_file ]; then
