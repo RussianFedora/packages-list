@@ -6,8 +6,8 @@ result_file="${temp}/result.txt"
 nolist_file="${temp}/nofile-list.txt"
 excludes_file="${temp}/excludes.txt"
 
-github_username=""
-github_password=""
+github_username="info@russianfedora.ru"
+github_password="ru.fedoracommunity.org"
 
 operation="read"
 if [ "1$1" == "1templates" ]; then
@@ -50,12 +50,15 @@ function get_repos {
     field="git_url"
     if [ "1$github_username" != "1" ] && [ "1github_password" != "1" ]; then
         with_auth=1
-        field="ssh_url"
+
+	if [ "$operation" == "write" ]; then
+            field="ssh_url"
+	fi
     fi
 
     rm -rf list.txt
     remove_repos
-    if [ $with_auth -lt 1 ]; then
+    if [ $with_auth -lt 1 ] && [ "$operation" != "write" ]; then
         curl -i ${github_api_url} > $list_file
     else
         curl -u "${github_username}:${github_password}" -i ${github_api_url} > $list_file
@@ -81,11 +84,9 @@ function create_template {
 }    
 
 if [ -d $temp ]; then
-    cp excludes.txt ${temp}/
     pushd $temp
 else
     mkdir -p $temp || exit 1
-    cp excludes.txt ${temp}/
     pushd $temp
 fi
 
