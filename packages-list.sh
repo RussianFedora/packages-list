@@ -2,7 +2,7 @@
 
 readme_file="README.RFRemix"
 temp="/tmp/github-repos"
-result_file="${temp}/result.txt"
+result_file="${temp}/result.html"
 nolist_file="${temp}/nofile-list.txt"
 excludes_file="${temp}/excludes.txt"
 
@@ -21,13 +21,41 @@ if [ "1$github_username" == "1" ] && [ "1github_password" == "1" ]; then
     fi
 fi
 
+function head_readme_file {
+    echo "<html>" >> $result_file
+    echo "<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" />" >> $result_file
+    echo "<body>" >> $result_file
+    echo "<table border='1' cols='5'>" >> $result_file
+    echo "<thead align=\"center\">" >> $result_file
+    echo "<tr>" >> $result_file
+    echo "<td><b>Название</b></td>" >> $result_file
+    echo "<td><b>Описание</b></td>" >> $result_file
+    echo "<td><b>Мейнтейнер</b></td>" >> $result_file
+    echo "<td><b>Репозиторий</b></td>" >> $result_file
+    echo "<td><b>Почему не в апстриме</b></td>" >> $result_file
+    echo "<td><b>Комментарий</b></td>" >> $result_file
+    echo "</tr>" >> $result_file
+    echo "</thead>" >> $result_file
+}
+
+function foot_readme_file {
+    echo "</table>" >> $result_file
+    echo "</html>" >> $result_file
+}
+
 function read_readme_file {
     dir=$1
     result_file=$2
-    echo "${dir}:" >> $result_file
+
+    echo "<tr>" >> $result_file
+
+    echo "<td>${dir}</td>" >> $result_file
     while read line; do
-        echo -e "\t${line}" >> $result_file
+        str=`echo "${line}" | awk 'BEGIN { FS = ":" } ; {$1="";print $0}' | cut -c 2-`
+        echo "<td>${str}</td>" >> $result_file
     done < $readme_file
+
+    echo "</tr>" >> $result_file
 }
 
 function remove_repos {
@@ -100,6 +128,8 @@ if [ -f $nolist_file ]; then
     rm -rf $nolist_file
 fi
 
+
+head_readme_file
 # Check README.RFRemix
 dirs=`find . -maxdepth 1 -type d`
 for dir in $dirs; do
@@ -149,6 +179,7 @@ for dir in $dirs; do
     fi
     popd
 done
+foot_readme_file
     
 popd
 echo "Done"
